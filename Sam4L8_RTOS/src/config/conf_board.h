@@ -54,5 +54,17 @@
 
 #define LCDA_ICON_USB 1,1
 #define LCDA_ICON_ATMEL 0,1
+#define LCDA_ICON_SIGNAL1 3,3
+#define LCDA_ICON_SIGNAL2 3,2
+#define LCDA_ICON_SIGNAL3 2,3
+#define LCDA_ICON_SIGNAL4 2,2
+#define LCDA_ICON_PLAY 2,1
+
+#define EXT3_LED_1 EXT3_PIN_7
+#define EXT3_LED_2 EXT3_PIN_8
+#define EXT3_LED_3 EXT3_PIN_6
+
+void configure_pins(void);
+void init_lcd(void);
 
 #endif /* CONF_BOARD_H_INCLUDED */
