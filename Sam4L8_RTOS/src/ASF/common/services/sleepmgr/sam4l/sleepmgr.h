@@ -1,30 +1,30 @@
 /**
  * \file
  *
- * \brief SAM4L8 Xplained Pro board configuration
+ * \brief Chip-specific sleep manager configuration
  *
- * Copyright (C) 2014-2015 Atmel Corporation. All rights reserved.
+ * Copyright (c) 2012-2015 Atmel Corporation. All rights reserved.
  *
  * \asf_license_start
  *
  * \page License
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
- * 
+ *
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * 3. The name of Atmel may not be used to endorse or promote products derived
  *    from this software without specific prior written permission.
- * 
+ *
  * 4. This software may only be redistributed and used in connection with an
  *    Atmel microcontroller product.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT ARE
@@ -38,21 +38,89 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * \asf_license_stop
+ *
  */
 /*
  * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
  */
 
-#ifndef CONF_BOARD_H_INCLUDED
-#define CONF_BOARD_H_INCLUDED
+#ifndef SAM_SLEEPMGR_INCLUDED
+#define SAM_SLEEPMGR_INCLUDED
 
-//#define CONF_BOARD_KEEP_WATCHDOG_AT_INIT
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#define PORT_MASK 40
-#define LCD_DUTY LCDCA_DUTY_1_4
-#define LCD_CONTRAST_LEVEL 30
+#include <compiler.h>
+#include <conf_sleepmgr.h>
+#include <interrupt.h>
+#include "bpm.h"
 
-#define LCDA_ICON_USB 1,1
-#define LCDA_ICON_ATMEL 0,1
+/**
+ * \weakgroup sleepmgr_group
+ * @{
+ */
 
-#endif /* CONF_BOARD_H_INCLUDED */
+enum sleepmgr_mode {
+	/** Active mode. */
+	SLEEPMGR_ACTIVE = 0,
+
+	/**
+	 *  Sleep mode.
+	 *  Potential Wake Up sources: fast startup events and interrupt.
+	 */
+	SLEEPMGR_SLEEP_0,
+	SLEEPMGR_SLEEP_1,
+	SLEEPMGR_SLEEP_2,
+	SLEEPMGR_SLEEP_3,
+
+	/**
+	 *  Wait mode.
+	 *  Potential Wake Up sources: fast startup events
+	 */
+	SLEEPMGR_WAIT,
+
+	/**
+	 *  Retention mode.
+	 *  Potential Wake Up sources: fast startup events
+	 */
+	SLEEPMGR_RET,
+
+	/** Backup mode. Potential Wake Up sources: WKUPs, SM, RTT, RTC. */
+	SLEEPMGR_BACKUP,
+
+	SLEEPMGR_NR_OF_MODES,
+};
+
+/**
+ * \internal
+ * \name Internal arrays
+ * @{
+ */
+#if defined(CONFIG_SLEEPMGR_ENABLE) || defined(__DOXYGEN__)
+/** Sleep mode lock counters */
+extern uint8_t sleepmgr_locks[];
+#endif /* CONFIG_SLEEPMGR_ENABLE */
+/** @} */
+
+static inline void sleepmgr_sleep(const enum sleepmgr_mode sleep_mode)
+{
+	Assert(sleep_mode != SLEEPMGR_ACTIVE);
+#ifdef CONFIG_SLEEPMGR_ENABLE
+	cpu_irq_disable();
+
+	/* Enter the sleep mode. */
+	bpm_sleep(BPM, sleep_mode);
+#else
+	UNUSED(sleep_mode);
+	cpu_irq_enable();
+#endif /* CONFIG_SLEEPMGR_ENABLE */
+}
+
+/** @} */
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* SAM_SLEEPMGR_INCLUDED */

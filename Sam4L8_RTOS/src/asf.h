@@ -68,6 +68,12 @@
 // From module: Interrupt management - SAM implementation
 #include <interrupt.h>
 
+// From module: LCDCA controller driver
+#include <lcdca.h>
+
+// From module: PDCA - Peripheral DMA Controller
+#include <pdca.h>
+
 // From module: Part identification macros
 #include <parts.h>
 
@@ -80,6 +86,10 @@
 
 // From module: SAM4L8 Xplained Pro LED support enabled
 #include <led.h>
+
+// From module: Sleep manager - SAM4L implementation
+#include <sam4l/sleepmgr.h>
+#include <sleepmgr.h>
 
 // From module: System Clock Control - SAM4L implementation
 #include <sysclk.h>
